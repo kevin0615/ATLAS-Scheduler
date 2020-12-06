@@ -1,0 +1,62 @@
+        /*   //If queue is empty, return end of queue
+            if (!q.size())
+                return q.end();
+            
+            //Else return based on the policy
+            //Rule 1 a. Serve requests that with cycles > T
+            list<Request> Outstanding_q;
+            bool emp = false;
+            for(list<Request>::iterator it = q.begin(); it!=q.end(); ++it){
+                if(it->cycle >= T_CYCLE){
+                    Outstanding_q.push_back(*it);
+                    emp =true;
+                }
+            }
+
+            //Rule 1 b. Serve requests that have LAS
+            if(emp){
+                emp=false;
+                //get the req of the core with the LAS
+                auto head = Outstanding_q.begin();
+                for (auto itr = next(Outstanding_q.begin(), 1); itr != Outstanding_q.end(); itr++)
+                    head = this->ctrl->least_Attained_Service(head, itr);
+                return head;
+                //Get the id of the core with LAS
+                int id_ = head->coreid;
+                //Rule 1.c and d Schedule the requests following FCFS_rowhit
+                for (auto itr = next(Outstanding_q.begin(), 1); itr != Outstanding_q.end(); itr++){
+                    if(itr->coreid == id_)
+                        head = compare[int(type)](head, itr);
+                }
+                return head;
+
+            }else{*/
+                auto head = q.begin();
+                for (auto itr = next(q.begin(), 1); itr != q.end(); itr++)
+                    head = this->ctrl->least_Attained_Service(head, itr);
+                return head;
+               /* //Get the id of the core with LAS
+                int id_ = head->coreid;
+                //Rule 1.c and d Schedule the requests following FCFS_rowhit
+                for (auto itr = next(q.begin(), 1); itr != q.end(); itr++){
+                    if(itr->coreid == id_)
+                        head = compare[int(type)](head, itr);
+                }
+                return head;
+           }
+
+    ,
+
+        // ATLAS row hit and FCFS check
+        [this] (ReqIter req1, ReqIter req2) {
+            bool rowhit1 = this->ctrl->is_row_hit(req1);
+            bool rowhit2 = this->ctrl->is_row_hit(req2);
+
+            if (rowhit1 ^ rowhit2) {
+                if (rowhit1) return req1;
+                return req2;
+            }
+
+            if (req1->arrive <= req2->arrive) return req1;
+            return req2;}
+    }
